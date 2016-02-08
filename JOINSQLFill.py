@@ -21,22 +21,18 @@ class GenericCsv2SQL():
             self.c.execute("DROP TABLE IF EXISTS employees")
             self.c.execute("DROP TABLE IF EXISTS positions")
 
-
-
-
             ### Following uses ID as only PRIMARY KEY in order to get ID to autoincrement
             self.c.execute("CREATE TABLE employees (employee_ID,last_name,first_name,position_ID, UNIQUE(last_name,first_name))")
             # self.c.execute("CREATE TABLE employees (employee_ID,last_name,first_name,position_ID)")
+            # print("created employees table'")
 
-
-
-            self.c.execute("CREATE TABLE positions (position_ID,title)")
-
+            self.c.execute("CREATE TABLE positions (position_ID,title, UNIQUE(position_ID,title))")
+            # print('created positions table')
 
             # self.index1 = self.c.execute("CREATE INDEX INDEXKEY ON StxData2(date)")
             # self.index2 = self.c.execute("CREATE UNIQUE INDEX INDEXDATE ON StxData2(keynumber)")
 
-    def populateTables(self):
+    def populateEmployees(self):
 
             rowNumber=0
             with open('{0}.csv'.format('employees'), newline='') as csvfile:
@@ -54,25 +50,51 @@ class GenericCsv2SQL():
                     rowNumber += 1
               self.conn.commit()
 
+    def populatePositions(self):
+
+            rowNumber=0
+            with open('{0}.csv'.format('positions'), newline='') as csvfile:
+              reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+              for row in reader:
+                if rowNumber > 0:
+
+                  self.c.execute("INSERT OR IGNORE INTO positions (position_ID,title) VALUES (?,?)",
+                                 (row[0],row[1]))
+
+
+                  # self.c.execute("REPLACE INTO StxData2 (keynumber, symbol, date,open,high ,low ,close ,vol ,adjclose ) VALUES (?,?,?,?,?,?,?,?,?)", (self.keyFiller,i,row[0],row[1],row[2],row[3],row[4],row[5],row[6]))
+                  self.keyFiller += 1
+                else:
+                    rowNumber += 1
+              self.conn.commit()
+
+
+
     def printMessage(self,whichOne):
-        if whichOne == 'b':
+        if whichOne == 'c':
             print("SQL Table Created")
         else:
             print("SQL Table Updated")
         # self.c.execute(select count(*) from <stxTable1> where ..
 
 
-def start(x,createOrUpdate):
+def main(x,createOrUpdate):
     a = GenericCsv2SQL(x)
-    b = a.createTables()
-    c = a.populateTables()
-    # else:
-    #     print("Invalid Response. Try Again")
-    #     start(x)
-    # d = a.printMessage(createOrUpdate)
-    #
+    if createOrUpdate == 'c':
+        a.createTables()
+        a.populateEmployees()
+        a.populatePositions()
+        print('created')
+    else:
+        a.populateEmployees()
+        a.populatePositions()
+        print('updated existing')
 
-start('x','c')
+    a.printMessage(createOrUpdate)
+
+
+if __name__ == '__main__': main('x','e')
+
 
 
 

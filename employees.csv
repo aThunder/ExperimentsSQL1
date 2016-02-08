@@ -1,6 +1,7 @@
 employee_id,last_name,first_name,position_id
-10000,Smith,John,1
-10001,Anderson,Dave,2
-10002,Doe,John,3
-10003,Hunt,Dylen,99
-10004,Smith,Susan,123
+10000,Smith,John,100
+10001,Anderson,Dave,200
+10002,James,Jane,301
+10003,Hunter,Donna,100
+10004,Smith,Susan,400
+10001,Anderson,David,400
